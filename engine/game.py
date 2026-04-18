@@ -1,0 +1,231 @@
+"""Game session: orchestrates multiple hands."""
+
+import yaml
+from pathlib import Path
+from engine.hand import Hand, HandResult
+from agent.base_agent import BaseAgent
+from agent.style_agent import StyleAgent
+from agent.human_agent import HumanAgent
+from agent.llm_agent import LLMAgent
+from strategy.style_profile import StyleRegistry
+from memory.decision_logger import DecisionLogger
+from memory.history_store import HistoryStore
+from memory.hand_history import HandHistory
+
+
+class Game:
+    """Orchestrates a multi-hand poker session."""
+
+    def __init__(self, config_path: str, session_id: str | None = None):
+        self.config = self._load_config(config_path)
+        self.players: list[dict] = []
+        self.button_index = 0
+        self.hand_count = 0
+        self.results: list[HandResult] = []
+        self.session_id = session_id
+
+        # Load style profiles
+        styles_dir = Path(config_path).parent / "styles"
+        self.style_registry = StyleRegistry(str(styles_dir))
+
+        # Initialize players from config
+        for p in self.config["players"]:
+            stack_bb = float(p["stack_bb"])
+            self.players.append({
+                "id": p["id"],
+                "style": p["style"],
+                "stack_bb": stack_bb,
+                "initial_stack_bb": stack_bb,
+            })
+
+        # Create agent map
+        self.agent_map: dict[str, BaseAgent] = {}
+        self.human_id = None
+        llm_config = self.config.get("llm", {})
+
+        for p in self.players:
+            style_profile = None
+            if p["style"] != "human" and p["style"] != "llm":
+                style_profile = self.style_registry.get(p["style"])
+                if style_profile is None:
+                    style_name = self.style_registry.list_styles()[0]
+                    style_profile = self.style_registry.get(style_name)
+
+            if p["style"] == "human":
+                self.agent_map[p["id"]] = HumanAgent(p["id"], p["style"])
+                self.human_id = p["id"]
+            elif p["style"] == "llm":
+                self.agent_map[p["id"]] = LLMAgent(
+                    player_id=p["id"],
+                    api_key=llm_config.get("api_key"),
+                    api_base=llm_config.get("api_base", "https://api.openai.com/v1"),
+                    model=llm_config.get("model", "gpt-4o-mini"),
+                    style=p.get("llm_style", "balanced"),
+                )
+            else:
+                self.agent_map[p["id"]] = StyleAgent(p["id"], style_profile)
+
+        # Initialize memory modules
+        session_config = self.config.get("session", {})
+        base_history = session_config.get("history_file", "hand_history.jsonl")
+        base_log = session_config.get("decision_log", "decision_log.txt")
+
+        if session_id:
+            # Generate session-specific filenames
+            history_path = self._generate_session_filename(base_history, session_id)
+            log_path = self._generate_session_filename(base_log, session_id)
+        else:
+            history_path = base_history
+            log_path = base_log
+
+        self.history_store = HistoryStore(history_path)
+        self.decision_logger = DecisionLogger(log_path)
+        self.table_size = self.config.get("table", {}).get("size", 6)
+
+    def _generate_session_filename(self, base: str, session_id: str) -> str:
+        """Generate session-specific filename by inserting session_id before extension."""
+        import os
+        name, ext = os.path.splitext(base)
+        return f"{name}_{session_id}{ext}"
+
+    def play_hand(self) -> HandResult:
+        """Play a single hand."""
+        self.hand_count += 1
+        hand_id = f"h{self.hand_count:03d}"
+
+        # Get active players (with chips)
+        active_players = [p for p in self.players if p["stack_bb"] > 0]
+        if len(active_players) < 2:
+            raise ValueError("Need at least 2 players with chips to play")
+
+        # Determine seed for this hand
+        seed = None
+        if self.config.get("session", {}).get("seed") is not None:
+            seed = self.config["session"]["seed"] + self.hand_count
+
+        hand = Hand(
+            players=active_players,
+            button_index=self.button_index % len(active_players),
+            small_blind_bb=self.config["table"]["small_blind_bb"],
+            big_blind_bb=self.config["table"]["big_blind_bb"],
+            hand_id=hand_id,
+            deck_seed=seed,
+        )
+
+        result = hand.play(self.agent_map)
+
+        # Update player stacks from result
+        for final_seat in result.final_seats:
+            for p in self.players:
+                if p["id"] == final_seat["player_id"]:
+                    p["stack_bb"] = final_seat["stack_bb"]
+
+        # Advance button
+        self.button_index = (self.button_index + 1) % len(active_players)
+
+        self.results.append(result)
+        return result
+
+    def play_session(self, num_hands: int | None = None, interactive: bool = False) -> list[HandResult]:
+        """Play multiple hands. Prompts between hands to continue or quit."""
+        if num_hands is None:
+            num_hands = self.config.get("session", {}).get("num_hands", 10)
+
+        hands_played = 0
+
+        while True:
+            active = [p for p in self.players if p["stack_bb"] > 0]
+            if len(active) < 2:
+                print(f"\n只有 {len(active)} 个玩家有筹码，游戏结束。")
+                break
+
+            # Check if human has lost all chips
+            human = next((p for p in self.players if p["id"] == self.human_id), None)
+            if human and human["stack_bb"] <= 0:
+                print(f"\n【{human['id']}】筹码归零，游戏结束。")
+                break
+
+            result = self.play_hand()
+            self._print_hand_result(result)
+            self._save_hand_history(result)
+            hands_played += 1
+
+            # Ask user if they want to continue (ALWAYS ask, regardless of mode)
+            print(f"\n{'='*40}")
+            print(f"已玩 {hands_played} 手牌")
+            print(f"当前筹码: ", end="")
+            for p in self.players:
+                if p["stack_bb"] > 0:
+                    print(f"{p['id']}: {p['stack_bb']:.1f}BB  ", end="")
+            print()
+            print(f"{'='*40}")
+
+            try:
+                choice = input("\n> 输入 q 退出，其他键继续下一手牌: ").strip().lower()
+                if choice == "q":
+                    print("\n游戏结束。")
+                    break
+            except (EOFError, KeyboardInterrupt):
+                print("\n\n游戏结束。")
+                break
+
+        return self.results
+
+    def _save_hand_history(self, result: HandResult) -> None:
+        """Save hand history and decision log."""
+        # Save decision log
+        self.decision_logger.log_hand(result, self.players)
+
+        # Build and save hand history
+        history = HandHistory.from_result(
+            result=result,
+            players=self.players,
+            small_blind_bb=self.config["table"]["small_blind_bb"],
+            big_blind_bb=self.config["table"]["big_blind_bb"],
+            table_size=self.table_size,
+        )
+        self.history_store.save(history)
+
+    def _print_hand_result(self, result: HandResult) -> None:
+        """Print a hand result to console (clean output, no style/reason)."""
+        print(f"\n{'='*50}")
+        print(f"Hand #{result.hand_id} ({self.config['table']['size']}-max)")
+        print(f"{'='*50}")
+
+        # Print button position
+        print(f"Button: Seat {result.final_seats[0].get('position_name', '?')}")
+
+        # Community cards
+        if result.community_cards:
+            cards_str = " ".join(str(c) for c in result.community_cards)
+            print(f"\n公共牌: {cards_str}")
+
+        # Showdown - only show this since actions are printed in real-time
+        if result.winners:
+            print(f"\n--- 摊牌 ---")
+            # Check if this was a real showdown or a win by default (everyone else folded)
+            # In Texas Hold'em, a player who wins by default (everyone folds) does NOT need to show cards
+            showdown_winners = [
+                w for w in result.winners
+                if w.hand_name != "最后一个玩家（其他人弃牌）"
+            ]
+            if showdown_winners:
+                # Real showdown - show hole cards for non-folded players
+                for seat in result.final_seats:
+                    if not seat["folded"] and seat["hole_cards"]:
+                        cards = " ".join(str(c) for c in seat["hole_cards"])
+                        print(f"  {seat['player_id']}: {cards}")
+
+            for w in result.winners:
+                player_id = result.final_seats[w.seat_index]["player_id"]
+                print(f"  {player_id} 赢得 {w.amount_bb}BB ({w.hand_name})")
+
+        # Final stacks
+        print(f"\n--- 筹码 ---")
+        for p in self.players:
+            print(f"  {p['id']}: {p['stack_bb']:.1f}BB")
+
+    def _load_config(self, path: str) -> dict:
+        """Load YAML config file."""
+        with open(path, "r", encoding="utf-8") as f:
+            return yaml.safe_load(f)

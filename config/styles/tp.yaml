@@ -1,0 +1,53 @@
+name: "TP"
+display_name: "Tight-Passive"
+description: "Plays few hands and plays passively (calls more than raises)"
+preflop_vpip: 0.18
+preflop_pfr: 0.08
+open_threshold: 0.70
+call_threshold: 0.60
+reraise_threshold: 0.85
+defend_bb_threshold: 0.50
+
+preflop:
+  fold_weight: 2.0
+  check_weight: 1.0
+  call_weight: 2.0
+  bet_weight: 0.8
+  raise_weight: 0.5
+  all_in_weight: 0.1
+  bluff_frequency: 0.02
+  cbet_frequency: 0.0
+
+flop:
+  fold_weight: 1.5
+  check_weight: 1.5
+  call_weight: 2.0
+  bet_weight: 0.8
+  raise_weight: 0.5
+  all_in_weight: 0.1
+  bluff_frequency: 0.05
+  cbet_frequency: 0.40
+
+turn:
+  fold_weight: 1.8
+  check_weight: 1.5
+  call_weight: 1.5
+  bet_weight: 0.6
+  raise_weight: 0.3
+  all_in_weight: 0.1
+  bluff_frequency: 0.03
+  cbet_frequency: 0.30
+
+river:
+  fold_weight: 2.0
+  check_weight: 1.8
+  call_weight: 1.5
+  bet_weight: 0.5
+  raise_weight: 0.3
+  all_in_weight: 0.1
+  bluff_frequency: 0.02
+  cbet_frequency: 0.0
+
+small_bet_pct: 0.25
+medium_bet_pct: 0.40
+large_bet_pct: 0.55

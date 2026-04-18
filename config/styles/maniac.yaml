@@ -1,0 +1,53 @@
+name: "Maniac"
+display_name: "Maniac"
+description: "Plays every hand, raises constantly, unpredictable and aggressive"
+preflop_vpip: 0.80
+preflop_pfr: 0.60
+open_threshold: 0.20
+call_threshold: 0.10
+reraise_threshold: 0.30
+defend_bb_threshold: 0.05
+
+preflop:
+  fold_weight: 0.2
+  check_weight: 0.1
+  call_weight: 1.0
+  bet_weight: 3.0
+  raise_weight: 4.0
+  all_in_weight: 1.5
+  bluff_frequency: 0.50
+  cbet_frequency: 0.0
+
+flop:
+  fold_weight: 0.3
+  check_weight: 0.2
+  call_weight: 1.0
+  bet_weight: 3.0
+  raise_weight: 3.5
+  all_in_weight: 1.5
+  bluff_frequency: 0.60
+  cbet_frequency: 0.95
+
+turn:
+  fold_weight: 0.4
+  check_weight: 0.3
+  call_weight: 1.0
+  bet_weight: 3.0
+  raise_weight: 3.0
+  all_in_weight: 1.5
+  bluff_frequency: 0.55
+  cbet_frequency: 0.85
+
+river:
+  fold_weight: 0.3
+  check_weight: 0.2
+  call_weight: 1.2
+  bet_weight: 3.0
+  raise_weight: 3.0
+  all_in_weight: 1.5
+  bluff_frequency: 0.50
+  cbet_frequency: 0.0
+
+small_bet_pct: 0.75
+medium_bet_pct: 1.00
+large_bet_pct: 1.25

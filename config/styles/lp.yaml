@@ -1,0 +1,53 @@
+name: "LP"
+display_name: "Loose-Passive"
+description: "Plays many hands but rarely raises, loves to call and see flops"
+preflop_vpip: 0.55
+preflop_pfr: 0.12
+open_threshold: 0.35
+call_threshold: 0.25
+reraise_threshold: 0.50
+defend_bb_threshold: 0.20
+
+preflop:
+  fold_weight: 0.8
+  check_weight: 1.5
+  call_weight: 2.5
+  bet_weight: 0.5
+  raise_weight: 0.3
+  all_in_weight: 0.1
+  bluff_frequency: 0.08
+  cbet_frequency: 0.0
+
+flop:
+  fold_weight: 0.8
+  check_weight: 1.5
+  call_weight: 2.5
+  bet_weight: 0.5
+  raise_weight: 0.3
+  all_in_weight: 0.1
+  bluff_frequency: 0.10
+  cbet_frequency: 0.30
+
+turn:
+  fold_weight: 1.0
+  check_weight: 1.8
+  call_weight: 2.0
+  bet_weight: 0.4
+  raise_weight: 0.2
+  all_in_weight: 0.1
+  bluff_frequency: 0.08
+  cbet_frequency: 0.25
+
+river:
+  fold_weight: 1.2
+  check_weight: 2.0
+  call_weight: 1.8
+  bet_weight: 0.4
+  raise_weight: 0.2
+  all_in_weight: 0.1
+  bluff_frequency: 0.05
+  cbet_frequency: 0.0
+
+small_bet_pct: 0.20
+medium_bet_pct: 0.33
+large_bet_pct: 0.45

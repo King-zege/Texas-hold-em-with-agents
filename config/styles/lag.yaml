@@ -1,0 +1,53 @@
+name: "LAG"
+display_name: "Loose-Aggressive"
+description: "Plays many hands and is very aggressive, loves to steal blinds"
+preflop_vpip: 0.45
+preflop_pfr: 0.35
+open_threshold: 0.40
+call_threshold: 0.35
+reraise_threshold: 0.60
+defend_bb_threshold: 0.30
+
+preflop:
+  fold_weight: 0.5
+  check_weight: 0.3
+  call_weight: 1.5
+  bet_weight: 2.5
+  raise_weight: 3.0
+  all_in_weight: 0.8
+  bluff_frequency: 0.25
+  cbet_frequency: 0.0
+
+flop:
+  fold_weight: 0.5
+  check_weight: 0.4
+  call_weight: 1.5
+  bet_weight: 2.5
+  raise_weight: 3.0
+  all_in_weight: 0.8
+  bluff_frequency: 0.35
+  cbet_frequency: 0.85
+
+turn:
+  fold_weight: 0.6
+  check_weight: 0.5
+  call_weight: 1.5
+  bet_weight: 2.5
+  raise_weight: 2.5
+  all_in_weight: 0.8
+  bluff_frequency: 0.30
+  cbet_frequency: 0.70
+
+river:
+  fold_weight: 0.5
+  check_weight: 0.3
+  call_weight: 1.2
+  bet_weight: 2.0
+  raise_weight: 2.0
+  all_in_weight: 0.8
+  bluff_frequency: 0.25
+  cbet_frequency: 0.0
+
+small_bet_pct: 0.50
+medium_bet_pct: 0.75
+large_bet_pct: 1.00

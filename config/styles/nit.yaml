@@ -1,0 +1,53 @@
+name: "Nit"
+display_name: "Nit (Ultra-Tight)"
+description: "Extremely tight, only plays premium hands, rarely bluffs"
+preflop_vpip: 0.12
+preflop_pfr: 0.06
+open_threshold: 0.85
+call_threshold: 0.80
+reraise_threshold: 0.95
+defend_bb_threshold: 0.70
+
+preflop:
+  fold_weight: 3.0
+  check_weight: 1.0
+  call_weight: 0.8
+  bet_weight: 0.5
+  raise_weight: 0.3
+  all_in_weight: 0.1
+  bluff_frequency: 0.01
+  cbet_frequency: 0.0
+
+flop:
+  fold_weight: 2.0
+  check_weight: 1.0
+  call_weight: 1.2
+  bet_weight: 0.5
+  raise_weight: 0.3
+  all_in_weight: 0.1
+  bluff_frequency: 0.02
+  cbet_frequency: 0.60
+
+turn:
+  fold_weight: 2.5
+  check_weight: 1.2
+  call_weight: 1.0
+  bet_weight: 0.4
+  raise_weight: 0.2
+  all_in_weight: 0.1
+  bluff_frequency: 0.01
+  cbet_frequency: 0.50
+
+river:
+  fold_weight: 2.0
+  check_weight: 1.5
+  call_weight: 1.0
+  bet_weight: 0.3
+  raise_weight: 0.2
+  all_in_weight: 0.1
+  bluff_frequency: 0.01
+  cbet_frequency: 0.0
+
+small_bet_pct: 0.33
+medium_bet_pct: 0.50
+large_bet_pct: 0.66

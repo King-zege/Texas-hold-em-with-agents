@@ -1,0 +1,60 @@
+name: "TAG"
+display_name: "Tight-Aggressive"
+description: "Plays few hands but plays them aggressively"
+# VPIP: Voluntarily Put $ In Pot %
+preflop_vpip: 0.22
+preflop_pfr: 0.18
+# Hand strength thresholds (0-1 scale)
+open_threshold: 0.65
+call_threshold: 0.55
+reraise_threshold: 0.80
+defend_bb_threshold: 0.45
+
+# Preflop tendencies
+preflop:
+  fold_weight: 1.5
+  check_weight: 0.5
+  call_weight: 1.0
+  bet_weight: 2.0
+  raise_weight: 2.5
+  all_in_weight: 0.3
+  bluff_frequency: 0.05
+  cbet_frequency: 0.0
+
+# Flop tendencies
+flop:
+  fold_weight: 1.0
+  check_weight: 0.8
+  call_weight: 1.0
+  bet_weight: 2.0
+  raise_weight: 2.0
+  all_in_weight: 0.3
+  bluff_frequency: 0.15
+  cbet_frequency: 0.70
+
+# Turn tendencies
+turn:
+  fold_weight: 1.2
+  check_weight: 1.0
+  call_weight: 1.0
+  bet_weight: 1.8
+  raise_weight: 1.5
+  all_in_weight: 0.3
+  bluff_frequency: 0.10
+  cbet_frequency: 0.55
+
+# River tendencies
+river:
+  fold_weight: 1.0
+  check_weight: 1.2
+  call_weight: 1.2
+  bet_weight: 1.5
+  raise_weight: 1.5
+  all_in_weight: 0.3
+  bluff_frequency: 0.10
+  cbet_frequency: 0.0
+
+# Bet sizing as % of pot
+small_bet_pct: 0.33
+medium_bet_pct: 0.55
+large_bet_pct: 0.75

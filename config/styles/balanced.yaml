@@ -1,0 +1,53 @@
+name: "Balanced"
+display_name: "Balanced / Reg"
+description: "Reasonable mix of tight/loose and passive/aggressive, plays like a competent regular"
+preflop_vpip: 0.28
+preflop_pfr: 0.22
+open_threshold: 0.55
+call_threshold: 0.45
+reraise_threshold: 0.70
+defend_bb_threshold: 0.35
+
+preflop:
+  fold_weight: 1.0
+  check_weight: 0.8
+  call_weight: 1.2
+  bet_weight: 1.5
+  raise_weight: 1.8
+  all_in_weight: 0.4
+  bluff_frequency: 0.12
+  cbet_frequency: 0.0
+
+flop:
+  fold_weight: 0.8
+  check_weight: 0.9
+  call_weight: 1.2
+  bet_weight: 1.5
+  raise_weight: 1.5
+  all_in_weight: 0.4
+  bluff_frequency: 0.20
+  cbet_frequency: 0.60
+
+turn:
+  fold_weight: 1.0
+  check_weight: 1.0
+  call_weight: 1.2
+  bet_weight: 1.3
+  raise_weight: 1.2
+  all_in_weight: 0.4
+  bluff_frequency: 0.15
+  cbet_frequency: 0.45
+
+river:
+  fold_weight: 0.9
+  check_weight: 1.2
+  call_weight: 1.3
+  bet_weight: 1.2
+  raise_weight: 1.0
+  all_in_weight: 0.4
+  bluff_frequency: 0.12
+  cbet_frequency: 0.0
+
+small_bet_pct: 0.33
+medium_bet_pct: 0.55
+large_bet_pct: 0.75
