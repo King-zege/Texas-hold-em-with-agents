@@ -3,6 +3,7 @@
 import yaml
 from pathlib import Path
 from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -21,6 +22,19 @@ class StreetTendency:
     # Tendencies
     bluff_frequency: float = 0.0  # 0-1
     cbet_frequency: float = 0.0
+
+
+@dataclass
+class GtoPreflop:
+    """GTO preflop strategy data."""
+    open_ranges: dict[str, list[str]]
+    open_sizes: dict[str, list[float]]
+    iso_raise_base_bb: float
+    iso_raise_per_limp_bb: float
+    three_bet_range: list[str]
+    three_bet_size_mult: float
+    four_bet_range: list[str]
+    four_bet_size_mult: float
 
 
 @dataclass
@@ -46,6 +60,9 @@ class StyleProfile:
     turn: StreetTendency
     river: StreetTendency
 
+    # GTO preflop data (from YAML)
+    gto_preflop: GtoPreflop | None = None
+
     @classmethod
     def from_yaml(cls, path: str) -> "StyleProfile":
         """Load style profile from YAML config file."""
@@ -70,6 +87,21 @@ class StyleProfile:
                 cbet_frequency=street_data.get("cbet_frequency", 0.0),
             )
 
+        # Load GTO preflop data
+        gto_preflop = None
+        gto_data = data.get("gto_preflop")
+        if gto_data:
+            gto_preflop = GtoPreflop(
+                open_ranges=gto_data.get("open_ranges", {}),
+                open_sizes=gto_data.get("open_sizes", {}),
+                iso_raise_base_bb=gto_data.get("iso_raise", {}).get("base_bb", 2),
+                iso_raise_per_limp_bb=gto_data.get("iso_raise", {}).get("per_limp_bb", 1),
+                three_bet_range=gto_data.get("three_bet_range", []),
+                three_bet_size_mult=gto_data.get("three_bet_size_mult", 3.0),
+                four_bet_range=gto_data.get("four_bet_range", []),
+                four_bet_size_mult=gto_data.get("four_bet_size_mult", 2.5),
+            )
+
         return cls(
             name=data["name"],
             display_name=data["display_name"],
@@ -84,6 +116,7 @@ class StyleProfile:
             flop=streets["flop"],
             turn=streets["turn"],
             river=streets["river"],
+            gto_preflop=gto_preflop,
         )
 
     def get_street_tendency(self, street: str) -> StreetTendency:

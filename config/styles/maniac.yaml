@@ -51,3 +51,35 @@ river:
 small_bet_pct: 0.75
 medium_bet_pct: 1.00
 large_bet_pct: 1.25
+
+# GTO 翻前数据结构（极端偏离GTO）
+gto_preflop:
+  # 开池范围 - 极宽
+  open_ranges:
+    utg: ["AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66", "55", "44", "33", "22", "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s", "A2s", "KQs", "KJs", "KTs", "K9s", "K8s", "QJs", "QTs", "Q9s", "JTs", "J9s", "T9s", "T8s", "98s", "97s", "86s", "85s", "75s", "74s", "64s", "63s", "53s", "43s", "32s", "AKo", "AJo", "ATo", "A9o", "A8o", "A7o", "KQo", "KJo", "KTo", "K9o", "QJo", "QTo", "Q9o", "JTo", "J9o", "T9o", "T8o", "98o", "97o", "87o", "86o", "76o", "75o"]
+    mp: ["AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66", "55", "44", "33", "22", "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s", "A2s", "KQs", "KJs", "KTs", "K9s", "K8s", "QJs", "QTs", "Q9s", "JTs", "J9s", "T9s", "T8s", "98s", "97s", "86s", "85s", "75s", "74s", "64s", "63s", "53s", "43s", "32s", "AKo", "AJo", "ATo", "A9o", "A8o", "A7o", "KQo", "KJo", "KTo", "K9o", "QJo", "QTo", "Q9o", "JTo", "J9o", "T9o", "T8o", "98o", "97o", "87o", "86o", "76o", "75o"]
+    co: ["AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66", "55", "44", "33", "22", "AsKs", "AsQs", "AsJs", "AsTs", "As9s", "As8s", "As7s", "As6s", "As5s", "As4s", "As3s", "As2s", "KsQs", "KsJs", "KsTs", "Ks9s", "Ks8s", "QsJs", "QsTs", "Qs9s", "JsTs", "Js9s", "T9s", "T8s", "98s", "97s", "86s", "85s", "75s", "74s", "64s", "63s", "53s", "43s", "32s", "AKo", "AJo", "ATo", "A9o", "A8o", "A7o", "A6o", "KQo", "KJo", "KTo", "K9o", "K8o", "QJo", "QTo", "Q9o", "JTo", "J9o", "T9o", "T8o", "98o", "97o", "87o", "86o", "76o", "75o", "65o"]
+    btn: ["AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66", "55", "44", "33", "22", "AsKs", "AsQs", "AsJs", "AsTs", "As9s", "As8s", "As7s", "As6s", "As5s", "As4s", "As3s", "As2s", "KsQs", "KsJs", "KsTs", "Ks9s", "Ks8s", "QsJs", "QsTs", "Qs9s", "JsTs", "Js9s", "T9s", "T8s", "98s", "97s", "86s", "85s", "75s", "74s", "64s", "63s", "53s", "43s", "32s", "AKo", "AJo", "ATo", "A9o", "A8o", "A7o", "A6o", "A5o", "KQo", "KJo", "KTo", "K9o", "K8o", "QJo", "QTo", "Q9o", "JTo", "J9o", "T9o", "T8o", "98o", "97o", "87o", "86o", "76o", "75o", "65o", "64o"]
+    sb: ["AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66", "55", "44", "33", "22", "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s", "A2s", "KQs", "KJs", "KTs", "K9s", "K8s", "QJs", "QTs", "Q9s", "JTs", "J9s", "T9s", "T8s", "98s", "97s", "86s", "85s", "75s", "74s", "64s", "63s", "53s", "43s", "32s", "AKo", "AJo", "ATo", "A9o", "A8o", "A7o", "KQo", "KJo", "KTo", "K9o", "QJo", "QTo", "Q9o", "JTo", "J9o", "T9o", "T8o", "98o", "97o", "87o", "86o", "76o", "75o"]
+
+  # 开池尺度（BB - 高于标准）
+  open_sizes:
+    utg: [3.0, 4.0]
+    mp: [2.5, 3.5]
+    hijack: [2.5, 3.0]
+    co: [2.5, 3.0]
+    btn: [2.5, 3.0]
+    sb: [3.5, 4.5]
+
+  # 隔离加注尺度（高于标准）
+  iso_raise:
+    base_bb: 3
+    per_limp_bb: 1.5
+
+  # 3-bet范围和尺度（更激进）
+  three_bet_range: ["AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66", "55", "44", "33", "22", "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "AKo", "AJo", "ATo", "A9o", "KQs", "KJs", "QJs", "JTs", "T9s"]
+  three_bet_size_mult: 3.5
+
+  # 4-bet范围和尺度（更激进）
+  four_bet_range: ["AA", "KK", "QQ", "JJ", "AKs", "AKo", "AQs", "AJs"]
+  four_bet_size_mult: 3.0

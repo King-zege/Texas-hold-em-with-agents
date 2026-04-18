@@ -55,12 +55,19 @@ class Game:
                 self.agent_map[p["id"]] = HumanAgent(p["id"], p["style"])
                 self.human_id = p["id"]
             elif p["style"] == "llm":
+                # Calculate skills_dir: project_root/strategy/skills
+                import os
+                # config/game_config.yaml -> project_root (two levels up from config)
+                project_root = os.path.dirname(os.path.dirname(os.path.abspath(config_path)))
+                skills_dir = os.path.join(project_root, "strategy", "skills")
                 self.agent_map[p["id"]] = LLMAgent(
                     player_id=p["id"],
                     api_key=llm_config.get("api_key"),
                     api_base=llm_config.get("api_base", "https://api.openai.com/v1"),
                     model=llm_config.get("model", "gpt-4o-mini"),
                     style=p.get("llm_style", "balanced"),
+                    skills_dir=skills_dir,
+                    use_skills_in_prompt=llm_config.get("use_skills_in_prompt", True),
                 )
             else:
                 self.agent_map[p["id"]] = StyleAgent(p["id"], style_profile)
